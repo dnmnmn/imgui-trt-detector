@@ -5,10 +5,13 @@
 #ifndef BBOX_H
 #define BBOX_H
 
+#include <iostream>
+#include <algorithm>
+
 class Bbox {
 public:
     Bbox() {
-        alive_ = false;
+        alive_ = 0;
         x1_ = 0.0f;
         y1_ = 0.0f;
         x2_ = 0.0f;
@@ -21,8 +24,8 @@ public:
         score_ = 0.0f;
     };
     ~Bbox() {};
-    void New_xywh(float _cx, float _cy, float _w, float _h, int32_t _class_id, float score_) {
-        alive_ = true;
+    void NewXywh(float _cx, float _cy, float _w, float _h, int32_t _class_id, float _score) {
+        alive_ = 0;
         cx_ = std::clamp(_cx, 0.0f, 1.0f);
         cy_ = std::clamp(_cy, 0.0f, 1.0f);
         w_ = std::clamp(_w, 0.0f, 1.0f);
@@ -36,10 +39,10 @@ public:
         y2_ = cy_ + h_ / 2;
         y2_ = std::clamp(y2_, 0.0f, 1.0f);
         class_id_ = _class_id;
-        score_ = score_;
+        score_ = _score;
     };
     void Copy(Bbox _bbox) {
-        alive_ = _bbox.alive_;
+        // alive_ = _bbox.alive_;
         x1_ = _bbox.x1_;
         y1_ = _bbox.y1_;
         x2_ = _bbox.x2_;
@@ -51,10 +54,10 @@ public:
         class_id_ = _bbox.class_id_;
         score_ = _bbox.score_;
     };
-    void Clear() { alive_ = false; };
+    void Clear() { alive_ = 0; };
     inline float GetArea() { return w_ * h_; };
 public:
-    bool alive_ = false;
+    uint alive_ = 0;
     float x1_ = 0.0f;
     float y1_ = 0.0f;
     float x2_ = 0.0f;

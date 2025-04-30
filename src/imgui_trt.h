@@ -10,6 +10,13 @@
 #include "module/stream/stream.h"
 #include "module/display/display.h"
 #include "application/application.h"
+#include "module/model/model.h"
+#include "module/model/segmentation/segmentation.h"
+#include "module/model/detection/detection.h"
+#include "module/draw/draw.h"
+#include "module/tracker/tracker.h"
+#include "module/filter/filter.h"
+#include "module/filter/remover/remover.h"
 
 class ImGuiTRT {
 public:

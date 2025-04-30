@@ -26,9 +26,10 @@ public:
         gpu_data_ = _gpu_data;
         org_image_ = std::make_shared<cv::Mat>(_shape->height_, _shape->width_, CV_8UC3, cv::Scalar(0,0,0));
         mask_ = cv::Mat(_mask_height, _mask_width, CV_8UC1, cv::Scalar(255));
-        filtered_image_ = cv::Mat(_mask_height, _mask_width, CV_8UC3, cv::Scalar(0,0,0));
+        menu_ = cv::Mat(_mask_height, _mask_width, CV_8UC3, cv::Scalar(0,0,0));
+        filtered_image_ = cv::Mat(_shape->height_, _shape->width_, CV_8UC3, cv::Scalar(0,0,0));
+        color_mask_ = cv::Mat(_mask_height, _mask_width, CV_8UC3, cv::Scalar(0,0,0));
         stacked_image_ = cv::Mat(_mask_height, _mask_width, CV_8UC1, cv::Scalar(255));
-        dough_mask_.resize(_mask_height * _mask_width, 0);
     };
     void Release() {
         org_image_->release();
@@ -40,12 +41,13 @@ public:
 public:
     std::shared_ptr<cv::Mat> org_image_;                         // 원본 이미지
     cv::Mat mask_;                              // 마스크 이미지 (0:도우, ..., 255:손)
+    cv::Mat menu_;
+    cv::Mat color_mask_;
     cv::Mat filtered_image_;                    // 필터링된 이미지 (avg_pixel or add_Weight)
     cv::Mat stacked_image_;                     // 누적 이미지   (spatio_temporal)
     void* gpu_data_;
     std::vector<T> bboxes_;
     std::vector<TrackBox> track_boxes_;
-    std::vector<uint8_t> dough_mask_;           // 도우 마스크
     int new_pixel_ = 0;                         // n(현재 마스크 - (현재 마스크 & 도우 마스크))
 };
 #endif //CONTAINER_H

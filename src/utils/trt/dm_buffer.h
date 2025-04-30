@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 #include "data/shape.h"
 
-namespace gotrt {
+namespace dm_trt {
     struct Tensor {
         void* cpu_tensor;
         void* gpu_tensor;
@@ -21,10 +21,10 @@ namespace gotrt {
         eDTYPE type;
     };
 
-    class GoBuffer {
+    class Buffer {
     public:
-        GoBuffer() {};
-        ~GoBuffer() {};
+        Buffer() {};
+        ~Buffer() {};
         void Initialize(int _batch_size,
                         const std::shared_ptr<Shape> _input_shape,
                         const std::shared_ptr<std::vector<Shape>> _output_shape,
@@ -34,16 +34,20 @@ namespace gotrt {
 
         // IO
         float *GetInputGpuData();
+        Tensor *GetInputTensor();
         Tensor *GetOutputTensor(int _index);
+        Tensor *GetInputResizeTensor();
+        void* GetInputResizeGpuData();
         std::vector<void *> GetDeviceBindings();
 
     public:
         std::vector<Tensor> output_tensor_;
+        Tensor input_resize_tensor_;
         cudaStream_t stream_;
     private:
         int batch_size_;
         int class_num_;
-        Tensor input_tensor;
+        Tensor input_tensor_;
         std::vector<void*> mDeviceBindings_;
     };
 }

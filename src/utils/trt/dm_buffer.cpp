@@ -5,8 +5,8 @@
 #include "dm_buffer.h"
 
 #include <utils/Logger/Logger.h>
-using namespace gotrt;
-void GoBuffer::Initialize(int _batch_size,
+using namespace dm_trt;
+void Buffer::Initialize(int _batch_size,
                           const std::shared_ptr<Shape> _input_shape,
                           const std::shared_ptr<std::vector<Shape>> _output_shape,
                           int _org_image_height,
@@ -29,26 +29,26 @@ void GoBuffer::Initialize(int _batch_size,
      * [5] Concat_703 - { 1, 1, 32, 8400 }
      * [6] 654 - { 1, 32, 160, 160 }
      */
-    DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
+    DM::Logger::GetInstance().Log("trt::Buffer::Initialize()", LOGLEVEL::INFO);
     cudaStreamCreate(&stream_);
     batch_size_ = _batch_size;
-    input_tensor.batch = batch_size_;
-    input_tensor.channel = _input_shape->channel_;
-    input_tensor.height = _input_shape->height_;
-    input_tensor.width = _input_shape->width_;
-    input_tensor.tensor_size = batch_size_ * input_tensor.channel * input_tensor.height * input_tensor.width * sizeof(float);
+    input_tensor_.batch = batch_size_;
+    input_tensor_.channel = _input_shape->channel_;
+    input_tensor_.height = _input_shape->height_;
+    input_tensor_.width = _input_shape->width_;
+    input_tensor_.tensor_size = batch_size_ * input_tensor_.channel * input_tensor_.height * input_tensor_.width * sizeof(float);
     if(_input_shape->dtype==eDTYPE::INT32){
-        input_tensor.cpu_tensor = new int32_t[input_tensor.tensor_size];
-        input_tensor.type = eDTYPE::INT32;
+        input_tensor_.cpu_tensor = new int32_t[input_tensor_.tensor_size];
+        input_tensor_.type = eDTYPE::INT32;
     }
     else if (_input_shape->dtype==eDTYPE::FLOAT32){
-        input_tensor.cpu_tensor = new float[input_tensor.tensor_size];
-        input_tensor.type = eDTYPE::FLOAT32;
+        input_tensor_.cpu_tensor = new float[input_tensor_.tensor_size];
+        input_tensor_.type = eDTYPE::FLOAT32;
     }
     else
         assert(false);
-    cudaMallocAsync(&input_tensor.gpu_tensor, input_tensor.tensor_size, stream_);
-    mDeviceBindings_.push_back(input_tensor.gpu_tensor);
+    cudaMallocAsync(&input_tensor_.gpu_tensor, input_tensor_.tensor_size, stream_);
+    mDeviceBindings_.push_back(input_tensor_.gpu_tensor);
 
     output_tensor_.resize(_output_shape->size());
     for(int i = 0; i < output_tensor_.size(); i++)
@@ -74,19 +74,35 @@ void GoBuffer::Initialize(int _batch_size,
         cudaMemset(output_tensor_[i].gpu_tensor, 0, (size_t)output_tensor_[i].tensor_size);
         mDeviceBindings_.push_back(output_tensor_[i].gpu_tensor);
     }
+    // input Resize tensor
+    input_resize_tensor_.batch = batch_size_;
+    input_resize_tensor_.channel = _input_shape->channel_;
+    input_resize_tensor_.height = _input_shape->height_;
+    input_resize_tensor_.width = _input_shape->width_;
+    input_resize_tensor_.tensor_size = batch_size_ * input_resize_tensor_.channel * input_resize_tensor_.height * input_resize_tensor_.width * sizeof(float);
+    if(_input_shape->dtype==eDTYPE::INT32)
+        input_resize_tensor_.cpu_tensor = new int32_t[input_resize_tensor_.tensor_size];
+    else if (_input_shape->dtype==eDTYPE::FLOAT32)
+        input_resize_tensor_.cpu_tensor = new float[input_resize_tensor_.tensor_size];
+    else
+        assert(false);
+    cudaMallocAsync(&input_resize_tensor_.gpu_tensor, input_resize_tensor_.tensor_size, stream_);
+    cudaMemset(input_resize_tensor_.gpu_tensor, 0, (size_t)input_resize_tensor_.tensor_size);
     // xywhsck tensor
     class_num_ = _class_num;
 }
 
-void GoBuffer::Release() {
+void Buffer::Release() {
     DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
-    delete[] input_tensor.cpu_tensor;
-    cudaFree(input_tensor.gpu_tensor);
+    delete[] input_tensor_.cpu_tensor;
+    cudaFree(input_tensor_.gpu_tensor);
     for(int i = 0; i < output_tensor_.size(); i++)
     {
         delete[] output_tensor_[i].cpu_tensor;
         cudaFree(output_tensor_[i].gpu_tensor);
     }
+    delete[] input_resize_tensor_.cpu_tensor;
+    cudaFree(input_resize_tensor_.gpu_tensor);
 
     cudaStreamDestroy(stream_);
 
@@ -94,17 +110,32 @@ void GoBuffer::Release() {
     mDeviceBindings_.clear();
 }
 
-float* GoBuffer::GetInputGpuData()
+float* Buffer::GetInputGpuData()
 {
-    return static_cast<float*>(input_tensor.gpu_tensor);
+    return static_cast<float*>(input_tensor_.gpu_tensor);
 }
 
-Tensor* GoBuffer::GetOutputTensor(int index)
+Tensor* Buffer::GetOutputTensor(int index)
 {
     return &output_tensor_[index];
 }
 
-std::vector<void*> GoBuffer::GetDeviceBindings()
+Tensor* Buffer::GetInputTensor()
+{
+    return &input_tensor_;
+}
+
+Tensor* Buffer::GetInputResizeTensor()
+{
+    return &input_resize_tensor_;
+}
+
+std::vector<void*> Buffer::GetDeviceBindings()
 {
     return mDeviceBindings_;
+}
+
+void* Buffer::GetInputResizeGpuData()
+{
+    return input_resize_tensor_.gpu_tensor;
 }

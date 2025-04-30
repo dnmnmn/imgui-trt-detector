@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-namespace gotrt{
+namespace dm_trt{
     class Logger : public nvinfer1::ILogger
     {
         void log(Severity severity, const char* msg) noexcept override

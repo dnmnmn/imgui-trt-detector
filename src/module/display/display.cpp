@@ -2,6 +2,8 @@
 // Created by Dongmin on 25. 4. 24.
 //
 
+#define GL_CALL(_CALL)      _CALL   // Call without error check
+
 #include "display.h"
 
 bool Display::Initialize() {
@@ -17,41 +19,83 @@ bool Display::Initialize() {
     int frameHeight = config_json.get_int("GoEngine/Stream/Height");
     int windowWidth = config_json.get_int("GoEngine/Window/Width");
     int windowHeight = config_json.get_int("GoEngine/Window/Height");
-    frame_texture_id_ = 0;
-    glGenTextures(1, &frame_texture_id_);
-    glBindTexture(GL_TEXTURE_2D, frame_texture_id_);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    if (!glfwInit())
+        return false;
+    window_ = glfwCreateWindow(1280, 720, "GLFW Test", nullptr, nullptr);
+    if (window_ == nullptr){
+        glfwTerminate();
+        return false;
+    }
     return true;
 }
 
 void Display::Release() {
     DM::Logger::GetInstance().Log(name_ + "::Release()", LOGLEVEL::INFO);
+    glfwDestroyWindow(window_);
+    glfwTerminate();
 }
+
+void Display::RunThread() {
+    fps_timer_.start();
+
+
+    glfwMakeContextCurrent(window_);
+    glfwSwapInterval(1); // Enable vsync
+    frame_texture_id_ = 0;
+    glGenTextures(1, &frame_texture_id_);
+    glBindTexture(GL_TEXTURE_2D, frame_texture_id_);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // 텍스처 래핑 모드 설정 (선택 사항)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    while(!stop_flag_) {
+        Run();
+        if(fps_timer_.end() >= debug_time_)
+        {
+            char log[100];
+            std::snprintf(log, 100,"::RunThread() - pass count: %d", pass_count_/60);
+            DM::Logger::GetInstance().Log(name_+log, LOGLEVEL::DEBUG);
+            std::snprintf(log, 100, "::RunThread() - fail count: %d", fail_count_/60);
+            DM::Logger::GetInstance().Log(name_+log, LOGLEVEL::DEBUG);
+            pass_count_ = 0;
+            fail_count_ = 0;
+            fps_timer_.start();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_));
+    }
+};
 
 void Display::Run() {
     uint index;
     if (data_store_->module_index_queues_[input_module_index_].try_pop(index)) {
         auto container = data_store_->contaiers_[index];
         auto org_image = container->org_image_;
+        if (!glfwWindowShouldClose(window_)) {
+            glBindTexture(GL_TEXTURE_2D, frame_texture_id_);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, org_image->cols, org_image->rows, 0, GL_BGR, GL_UNSIGNED_BYTE, org_image->data);
 
-        glBindTexture(GL_TEXTURE_2D, frame_texture_id_);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, org_image->cols, org_image->rows, 0,
-                  GL_BGR, GL_UNSIGNED_BYTE, (const GLvoid*)org_image->data);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, frame_texture_id_);
 
-        static ImGuiWindowFlags main_window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
-        ImGui::Begin("Display", nullptr, main_window_flags);
-        ImGui::Image((ImTextureID)static_cast<uintptr_t>(frame_texture_id_), viewport->Size);
-        ImGui::End();
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f, -1.0f);
+            glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f, -1.0f);
+            glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f,  1.0f);
+            glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f,  1.0f);
+            glEnd();
 
+            glDisable(GL_TEXTURE_2D);
+
+            glfwSwapBuffers(window_);
+        }
+        else
+            stop_flag_ = true;
+        glfwPollEvents();
         ++pass_count_;
         data_store_->module_index_queues_[output_module_index_].push(index);
     }

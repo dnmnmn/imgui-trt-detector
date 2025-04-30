@@ -16,7 +16,7 @@
 #include "utils/Logger/Logger.h"
 #include "utils/Json/JsonObject.h"
 #include "utils/FileSystem/FileSystem.h"
-
+#define MAX_DETECT_BOX 30
 class Pipeline {
 public:
     Pipeline() {};
@@ -26,24 +26,25 @@ public:
     void Release();
 
 public:
-     // module pipeline
-     std::vector<tbb::concurrent_queue<uint>> module_index_queues_;
+    // module pipeline
+    std::vector<tbb::concurrent_queue<uint>> module_index_queues_;
 
-     // containers memory
+    // containers memory
     std::vector<std::shared_ptr<Container<Bbox>>> contaiers_;
 
-     // Shape
-     std::shared_ptr<Shape> org_image_shape_;
+    // Shape
+    std::shared_ptr<Shape> org_image_shape_;
 
-     // gpu memory
-     void* gpu_org_image_buffer_;
+    // gpu memory
+    void* gpu_org_image_buffer_;
 
-     // tracker box
-     std::vector<TrackBox> tracker_boxes_;
+    // tracker box
+    std::mutex tracker_box_mutex_;
+    TrackBox tracker_box_;
 
-     // mask
-     int frame_count_;
-     std::vector<float> mask_count_;
+    // mask
+    int frame_count_;
+    std::vector<float> mask_count_;
 };
 
 

@@ -4,14 +4,14 @@
 
 #include "dm_engine.h"
 
-using namespace gotrt;
+using namespace dm_trt;
 
-void GoEngine::Initialize()
+void Engine::Initialize()
 {
     std::cout << "GoEngine::initialize()" << std::endl;
 }
 
-void GoEngine::Release()
+void Engine::Release()
 {
     std::cout << "GoEngine::release()" << std::endl;
     if (buffer_ != nullptr)
@@ -35,11 +35,10 @@ void GoEngine::Release()
 
 }
 
-bool GoEngine::LoadEngine(ModelParams _model_params,
+bool Engine::LoadEngine(ModelParams _model_params,
                           std::shared_ptr<Shape> _input_shape,
                           std::shared_ptr<std::vector<Shape>> _output_shape) {
-    std::cout << "GoEngine::load_engine()" << std::endl;
-    gotrt::Logger trtlogger;
+    dm_trt::Logger trtlogger;
     std::unique_ptr<nvinfer1::IBuilder> builder_ = std::unique_ptr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(trtlogger));
     if (!builder_) return false;
 
@@ -368,10 +367,10 @@ bool GoEngine::LoadEngine(ModelParams _model_params,
     return true;
 }
 
-bool GoEngine::LoadEngine(std::string _engine_path,
+bool Engine::LoadEngine(std::string _engine_path,
                             std::shared_ptr<Shape> _input_shape,
                             std::shared_ptr<std::vector<Shape> > _output_shape) {
-    gotrt::Logger trtlogger;
+    dm_trt::Logger trtlogger;
     runtime_ = std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(trtlogger));
     if (!runtime_)
         return false;
@@ -430,30 +429,35 @@ bool GoEngine::LoadEngine(std::string _engine_path,
 }
 
 
-bool GoEngine::Inference() {
+bool Engine::Inference() {
     bool status = context_->executeV2(buffer_->GetDeviceBindings().data());
     return status;
 }
 
-float* GoEngine::GetInputGpuData()
+float* Engine::GetInputGpuData()
 {
     return buffer_->GetInputGpuData();
 }
 
-Tensor* GoEngine::GetOutputTensor(int _index)
+Tensor* Engine::GetOutputTensor(int _index)
 {
     return buffer_->GetOutputTensor(_index);
 }
 
-bool GoEngine::ConstructNetwork(std::unique_ptr<nvinfer1::IBuilder>& builder,
+bool Engine::ConstructNetwork(std::unique_ptr<nvinfer1::IBuilder>& builder,
                                 std::unique_ptr<nvinfer1::INetworkDefinition>& network,
                                 std::unique_ptr<nvinfer1::IBuilderConfig>& config,
                                 std::unique_ptr<nvonnxparser::IParser>& parser,
                                 ModelParams model_params)
 {
-    auto parsed = parser->parseFromFile(model_params.wight_path.c_str(), static_cast<int>(nvinfer1::ILogger::Severity::kINFO));
+    auto parsed = parser->parseFromFile(model_params.weight_path.c_str(), static_cast<int>(nvinfer1::ILogger::Severity::kINFO));
     if (!parsed) return false;
     if (model_params.fp16) config->setFlag(nvinfer1::BuilderFlag::kFP16);
     if (model_params.int8) config->setFlag(nvinfer1::BuilderFlag::kINT8);
     return true;
+}
+
+void* Engine::GetInputResizeGpuData()
+{
+    return buffer_->GetInputResizeGpuData();
 }

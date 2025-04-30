@@ -38,8 +38,7 @@ add_executable(imgui_trt
     imgui/imstb_truetype.h
         imgui/backends/imgui_impl_glfw.cpp
         imgui/backends/imgui_impl_glfw.h
-#    imgui/backends/imgui_impl_sdl3.cpp
-#    imgui/backends/imgui_impl_sdl3.h
+
     imgui/backends/imgui_impl_opengl3.cpp
     imgui/backends/imgui_impl_opengl3.h
     imgui/backends/imgui_impl_opengl3_loader.h
@@ -68,6 +67,8 @@ add_executable(imgui_trt
     src/utils/Timer/Timer.h
     src/utils/FileSystem/FileSystem.cpp
     src/utils/FileSystem/FileSystem.h
+        src/utils/ColorMap/ColorMap.cpp
+        src/utils/ColorMap/ColorMap.h
     src/data/shape.h
     src/data/box/bbox.h
     src/data/box/trackbox.h
@@ -78,6 +79,28 @@ add_executable(imgui_trt
         src/imgui_trt.h
         src/application/application.cpp
         src/application/application.h
+        src/module/model/model.cpp
+        src/module/model/model.h
+        src/module/model/segmentation/segmentation.cpp
+        src/module/model/segmentation/segmentation.h
+        src/module/model/preprocess/preprocess.cpp
+        src/module/model/postprocess/postprocess.cpp
+        src/module/model/postprocess/postprocess.h
+        src/module/model/preprocess/preprocess.h
+        src/module/model/preprocess/preprocess.cu
+        src/module/model/detection/detection.cpp
+        src/module/model/detection/detection.h
+        src/module/draw/draw.cpp
+        src/module/draw/draw.h
+        src/module/tracker/tracker.cpp
+        src/module/tracker/tracker.h
+        src/module/tracker/hungarian/hungarian_algorithm.cpp
+        src/module/tracker/hungarian/hungarian_algorithm.hpp
+        src/module/filter/filter.cpp
+        src/module/filter/filter.h
+        src/module/filter/remover/remover.cpp
+        src/module/filter/remover/remover.h
+
 )
 
 target_link_libraries(imgui_trt
@@ -89,7 +112,7 @@ target_link_libraries(imgui_trt
         # PRIVATE SDL3
         PRIVATE glfw3 glfw
         ${OPENGL_LIBRARIES}
-        PRIVATE cuda cudart cudnn cublas nppig nppc nppial
+        PRIVATE cuda cudart cudnn cublas nppig nppc nppial nppim nppidei
         PRIVATE nvinfer nvonnxparser
         PRIVATE opencv_world
         PRIVATE tbb

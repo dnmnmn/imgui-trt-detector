@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+*.bat
+*.sh
+*.run
+
+*.md
+*.swp
+*.txt
+*.gradle
+*.iml
+
+*.vcxproj
+*.vcxproj.filters
+/imgui/backends/vulkan/

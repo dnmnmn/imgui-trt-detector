@@ -5,6 +5,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+#include <driver_types.h>
 #include <memory>
 #include <tbb/concurrent_queue.h>
 #include <thread>
@@ -20,6 +21,9 @@ public:
     void Run() override;
 private:
     cv::VideoCapture capture_;
+    cudaStream_t input_cuda_stream_;
+    int height_;
+    int width_;
 };
 
 

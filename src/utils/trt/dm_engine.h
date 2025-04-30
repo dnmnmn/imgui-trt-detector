@@ -11,7 +11,7 @@
 #include "NvOnnxParser.h"
 #include "logger.h"
 
-namespace gotrt
+namespace dm_trt
 {
     struct ModelParams
     {
@@ -22,16 +22,16 @@ namespace gotrt
         float confidence_threshold{0.35f};  //!< Confidence threshold for detection
         bool int8{false};                  //!< Allow runnning the network in Int8 mode.
         bool fp16{false};                  //!< Allow running the network in FP16 mode.
-        std::string wight_path; //!< Directory paths where sample data files are stored
+        std::string weight_path; //!< Directory paths where sample data files are stored
         std::string engine_path; //!< Directory paths where sample data files are stored
         int32_t input_index{0};             //!< Input index of the network
         std::vector<int32_t> output_index_vector; //!< Output index of the network
     };
 
-    class GoEngine {
+    class Engine {
     public:
-        GoEngine() {};
-        ~GoEngine() {};
+        Engine() {};
+        ~Engine() {};
         void Initialize();
         void Release();
         bool Inference();
@@ -44,10 +44,15 @@ namespace gotrt
                         std::shared_ptr<std::vector<Shape>> _output_shape);
 
     public:
-        void SetBuffer(std::shared_ptr<gotrt::GoBuffer> _buffer) { buffer_ = _buffer; }
+        void SetBuffer(std::shared_ptr<dm_trt::Buffer> _buffer) { buffer_ = _buffer; }
         cudaStream_t GetBufferStream() { return buffer_->stream_; }
+
+    public:
         float* GetInputGpuData();
+        void* GetInputResizeGpuData();
         Tensor* GetOutputTensor(int _index);
+        Tensor* GetInputTensor() { return buffer_->GetInputTensor(); }
+        Tensor* GetInputResizeTensor() { return buffer_->GetInputResizeTensor(); }
     private:
         bool ConstructNetwork(std::unique_ptr<nvinfer1::IBuilder>& builder,
                          std::unique_ptr<nvinfer1::INetworkDefinition>& network,
@@ -59,7 +64,7 @@ namespace gotrt
         std::unique_ptr<nvinfer1::IExecutionContext> context_;
         std::unique_ptr<nvinfer1::IRuntime> runtime_;
         std::unique_ptr<nvinfer1::ICudaEngine> engine_;
-        std::shared_ptr<gotrt::GoBuffer> buffer_;
+        std::shared_ptr<dm_trt::Buffer> buffer_;
         std::vector<float> rvalues_;
     };
 }

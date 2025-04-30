@@ -5,7 +5,7 @@
 #include "imgui_trt.h"
 
 bool ImGuiTRT::Initialize() {
-    DM::Logger::GetInstance().Log("ImGuiTRT::Init()", LOGLEVEL::INFO);
+    DM::Logger::GetInstance().Initialize();
 
     // Load the config file
     JsonObject config_json;
@@ -18,7 +18,12 @@ bool ImGuiTRT::Initialize() {
     }
 
     int use_stream = config_json.get_int("GoEngine/Stream/Use");
-    int use_display = 1;
+    int use_detect = config_json.get_int("GoEngine/Detect/Use");
+    int use_segment = config_json.get_int("GoEngine/Segment/Use");
+    int use_tracker = config_json.get_int("GoEngine/Tracker/Use");
+    int use_draw = config_json.get_int("GoEngine/Draw/Use");
+    int use_filter = config_json.get_int("GoEngine/Filter/Use");
+    int use_display = 0;
     // Initialize the data store
     pipeline_ = std::make_shared<Pipeline>();
     pipeline_->Initialize();
@@ -50,20 +55,72 @@ bool ImGuiTRT::Initialize() {
         DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Stream Error", LOGLEVEL::ERROR);
         return false;
     }
-
-    if (use_display > 0) {
-        // Initialize the display
-        auto display = std::make_shared<Display>();
-        if (!display->Initialize()) {
-            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Display Error", LOGLEVEL::ERROR);
+    if (use_detect) {
+        // Initialize the detection
+        auto detect = std::make_shared<Detection>();
+        if (!detect->Initialize()) {
+            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Detection Error", LOGLEVEL::ERROR);
             return false;
         }
-        display->SetDataStore(pipeline_);
-        display->SetInputModuleIndex(queue_index);
-        display->SetOutputModuleIndex(++queue_index);
+        detect->SetDataStore(pipeline_);
+        detect->SetInputModuleIndex(queue_index);
+        detect->SetOutputModuleIndex(++queue_index);
         pipeline_->module_index_queues_.push_back(tbb::concurrent_queue<uint>());
-        modules_.push_back(display);
+        modules_.push_back(detect);
     }
+    if (use_tracker > 0) {
+        // Initialize the tracker
+        auto tracker = std::make_shared<Tracker>();
+        if (!tracker->Initialize()) {
+            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Tracker Error", LOGLEVEL::ERROR);
+            return false;
+        }
+        tracker->SetDataStore(pipeline_);
+        tracker->SetInputModuleIndex(queue_index);
+        tracker->SetOutputModuleIndex(++queue_index);
+        pipeline_->module_index_queues_.push_back(tbb::concurrent_queue<uint>());
+        modules_.push_back(tracker);
+    }
+    if (use_segment) {
+        // Initialize the segmentation
+        auto seg = make_shared<Segmentation>();
+        if (!seg->Initialize()) {
+            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Segment Error", LOGLEVEL::ERROR);
+            return false;
+        }
+        seg->SetDataStore(pipeline_);
+        seg->SetInputModuleIndex(queue_index);
+        seg->SetOutputModuleIndex(++queue_index);
+        pipeline_->module_index_queues_.push_back(tbb::concurrent_queue<uint>());
+        modules_.push_back(seg);
+    }
+    if (use_filter > 0) {
+        // Initialize the filter
+        auto filter = std::make_shared<Remover>();
+        if (!filter->Initialize()) {
+            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Filter Error", LOGLEVEL::ERROR);
+            return false;
+        }
+        filter->SetDataStore(pipeline_);
+        filter->SetInputModuleIndex(queue_index);
+        filter->SetOutputModuleIndex(++queue_index);
+        pipeline_->module_index_queues_.push_back(tbb::concurrent_queue<uint>());
+        modules_.push_back(filter);
+    }
+    if (use_draw > 0) {
+        // Initialize the draw
+        auto draw = std::make_shared<Draw>();
+        if (!draw->Initialize()) {
+            DM::Logger::GetInstance().Log("ImGuiTRT::initialize() - Draw Error", LOGLEVEL::ERROR);
+            return false;
+        }
+        draw->SetDataStore(pipeline_);
+        draw->SetInputModuleIndex(queue_index);
+        draw->SetOutputModuleIndex(++queue_index);
+        pipeline_->module_index_queues_.push_back(tbb::concurrent_queue<uint>());
+        modules_.push_back(draw);
+    }
+
 
     modules_.at(0)->SetInputModuleIndex(queue_index);
     return true;
@@ -76,6 +133,9 @@ void ImGuiTRT::Release() {
         module.reset();
     }
     pipeline_->Release();
+    pipeline_.reset();
+    modules_.clear();
+    DM::Logger::GetInstance().Release();
 }
 
 void ImGuiTRT::Run() {
@@ -85,7 +145,7 @@ void ImGuiTRT::Run() {
     }
     while(true) {
         if (modules_.front()->stop_flag_ ) break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     for (auto module : modules_) {
         module->StopThread();

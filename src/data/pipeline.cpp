@@ -6,7 +6,7 @@
 #include <cuda_runtime_api.h>
 
 bool Pipeline::Initialize() {
-    DM::Logger::GetInstance().Log("DataStore::Initialize()", LOGLEVEL::INFO);
+    DM::Logger::GetInstance().Log("Pipeline::Initialize()", LOGLEVEL::INFO);
     JsonObject config_json;
     config_json.load(CONFIG_PATH);
 

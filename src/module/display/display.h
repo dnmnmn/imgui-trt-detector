@@ -23,8 +23,10 @@ public:
     void Release() override;
     void Run() override;
 
+    void RunThread() override;
 private:
     GLuint frame_texture_id_;
+    GLFWwindow* window_;
 };
 
 

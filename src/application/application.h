@@ -19,8 +19,14 @@ public:
     void Release() override;
     void Run() override;
 
+    void RunThread() override;
+
 public:
     GLFWwindow* window_;
+    GLuint video_texture_;
+    GLuint menu_texture_;
+    int imgui_radio_button_ = 0;
+    cv::Mat sub_image_;
 };
 
 
