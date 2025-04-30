@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 3. 12.
+// Created by Dongmin on 25. 3. 12.
 //
 
 #ifndef MAS_POSTPROCESS_H

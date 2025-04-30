@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 28.
+// Created by Dongmin on 25. 4. 28.
 //
 
 #ifndef DETECTION_H

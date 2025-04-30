@@ -13,12 +13,12 @@ bool Display::Initialize() {
     if(FileSystem::exist(config_path_)) {
         config_json.load(config_path_);
     } else assert(false);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    sleep_time_ = config_json.get_int("GoEngine/Log/SleepTime");
-    int frameWidth = config_json.get_int("GoEngine/Stream/Width");
-    int frameHeight = config_json.get_int("GoEngine/Stream/Height");
-    int windowWidth = config_json.get_int("GoEngine/Window/Width");
-    int windowHeight = config_json.get_int("GoEngine/Window/Height");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    sleep_time_ = config_json.get_int("Engine/Log/SleepTime");
+    int frameWidth = config_json.get_int("Engine/Stream/Width");
+    int frameHeight = config_json.get_int("Engine/Stream/Height");
+    int windowWidth = config_json.get_int("Engine/Window/Width");
+    int windowHeight = config_json.get_int("Engine/Window/Height");
 
     if (!glfwInit())
         return false;

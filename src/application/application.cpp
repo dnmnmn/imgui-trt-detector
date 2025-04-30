@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 24.
+// Created by Dongmin on 25. 4. 24.
 //
 
 #include "application.h"
@@ -12,7 +12,7 @@ bool Application::Initialize() {
     // Config
     JsonObject config_json;
     config_json.load(config_path_);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
     // Create window with graphics context
 
     if (!glfwInit())

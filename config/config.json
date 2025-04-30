@@ -1,0 +1,74 @@
+{
+  "Engine": {
+    "Path": {
+      "SegmentEngine": "/home/gopizza/data/weights/kor_seg_yolox.engine",
+      "SegmentWeights": "/home/gopizza/data/weights/kor_seg_250211_x",
+      "DetectEngine": "/home/gopizza/data/weights/kor_det_yolo_n2.engine",
+      "DetectWeights": "/home/gopizza/data/weights/kor_det_241227_n"
+    },
+    "Stream": {
+      "Use": 1,
+      "Stream": "/home/gopizza/data/video/full/2.mp4",
+      "Width": 1280,
+      "Height": 720,
+      "FPS": 30
+    },
+    "Detect": {
+      "Use": 1,
+      "MaxObjects": 100,
+      "ConfLevel": 0.35,
+      "IoULevel": 0.45,
+      "FP16": 0,
+      "Width": 416,
+      "Height": 160,
+      "InputIdx": 0,
+      "Batch": 1
+    },
+    "Segment": {
+      "Use": 1,
+      "MaxObjects": 200,
+      "ConfLevel": 0.45,
+      "IoULevel": 0.45,
+      "FP16": 1,
+      "Batch": 1,
+      "Test": 0,
+      "Width": 640,
+      "Height": 640,
+      "MaskWidth": 160,
+      "MaskHeight": 160,
+      "InputIdx": 0
+    },
+    "Draw": {
+      "Use": 1
+    },
+    "Filter": {
+      "Use": 1,
+      "MaxFrame": 120,
+      "Width": 160,
+      "Height": 160,
+      "Stacked": 1,
+      "AvgPixel": 1
+    },
+    "Tracker": {
+      "Use": 1
+    },
+    "Represent": {
+      "Use": 1
+    },
+    "Display": {
+      "Width": 640,
+      "Height": 640
+    },
+    "Log": {
+      "Use": 1,
+      "Level": 0,
+      "Path": "/home/gopizza/data/log",
+      "DebugTime": 60,
+      "SleepTime": 10
+    },
+    "Utils": {
+      "MaxBuffer": 8,
+      "TestMode": 1
+    }
+  }
+}

@@ -10,12 +10,12 @@ bool Pipeline::Initialize() {
     JsonObject config_json;
     config_json.load(CONFIG_PATH);
 
-    int MAX_OBJECT = config_json.get_int("GoEngine/Utils/MaxBuffer");
-    int mask_width = config_json.get_int("GoEngine/Segment/MaskWidth");
-    int mask_height = config_json.get_int("GoEngine/Segment/MaskHeight");
-    int _batch_size = config_json.get_int("GoEngine/Segment/Batch");
-    int _org_height = config_json.get_int("GoEngine/Stream/Height");
-    int _org_width = config_json.get_int("GoEngine/Stream/Width");
+    int MAX_OBJECT = config_json.get_int("Engine/Utils/MaxBuffer");
+    int mask_width = config_json.get_int("Engine/Segment/MaskWidth");
+    int mask_height = config_json.get_int("Engine/Segment/MaskHeight");
+    int _batch_size = config_json.get_int("Engine/Segment/Batch");
+    int _org_height = config_json.get_int("Engine/Stream/Height");
+    int _org_width = config_json.get_int("Engine/Stream/Width");
     int _org_channel = 3;
     int _type = CV_8UC3;
 

@@ -10,12 +10,12 @@ bool Draw::Initialize() {
     // Config
     JsonObject config_json;
     config_json.load(config_path_);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    sleep_time_ = config_json.get_int("GoEngine/Log/SleepTime");
-    width_ = config_json.get_int("GoEngine/Stream/Width");
-    height_ = config_json.get_int("GoEngine/Stream/Height");
-    seg_width_ = config_json.get_int("GoEngine/Segment/Width");
-    seg_height_ = config_json.get_int("GoEngine/Segment/Height");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    sleep_time_ = config_json.get_int("Engine/Log/SleepTime");
+    width_ = config_json.get_int("Engine/Stream/Width");
+    height_ = config_json.get_int("Engine/Stream/Height");
+    seg_width_ = config_json.get_int("Engine/Segment/Width");
+    seg_height_ = config_json.get_int("Engine/Segment/Height");
     return true;
 }
 

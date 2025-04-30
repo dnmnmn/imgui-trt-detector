@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 3. 17.
+// Created by Dongmin on 25. 3. 17.
 //
 
 #include "tracker.h"
@@ -9,10 +9,10 @@ bool Tracker::Initialize() {
     DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
     JsonObject config_json;
     config_json.load(config_path_);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    width_ = config_json.get_int("GoEngine/Segment/Width");
-    height_ = config_json.get_int("GoEngine/Segment/Height");
-    max_frame_ = config_json.get_int("GoEngine/Filter/MaxFrame");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    width_ = config_json.get_int("Engine/Segment/Width");
+    height_ = config_json.get_int("Engine/Segment/Height");
+    max_frame_ = config_json.get_int("Engine/Filter/MaxFrame");
     matcher_ = std::make_shared<HungarianAlgorithm>();
     track_alive_boxes_list_.clear();
     track_boxes_vector_.resize(200);

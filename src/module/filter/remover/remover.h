@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 30.
+// Created by Dongmin on 25. 4. 30.
 //
 
 #ifndef REMOVER_H

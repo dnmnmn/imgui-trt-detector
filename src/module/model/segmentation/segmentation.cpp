@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 3. 12.
+// Created by Dongmin on 25. 3. 12.
 //
 
 #include "segmentation.h"
@@ -11,11 +11,11 @@ bool Segmentation::Initialize() {
     JsonObject config_json;
     config_json.load(config_path_);
 
-    max_objects_ = config_json.get_int("GoEngine/Segment/MaxObjects");
-    batch_size_ = config_json.get_int("GoEngine/Segment/Batch");
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    int org_image_width = config_json.get_int("GoEngine/Stream/Width");
-    int org_image_height = config_json.get_int("GoEngine/Stream/Height");
+    max_objects_ = config_json.get_int("Engine/Segment/MaxObjects");
+    batch_size_ = config_json.get_int("Engine/Segment/Batch");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    int org_image_width = config_json.get_int("Engine/Stream/Width");
+    int org_image_height = config_json.get_int("Engine/Stream/Height");
     scale_ = (float)org_image_width / (float)org_image_height;
     // Input Ouput Shape Initialization
     input_shape_ = std::make_shared<Shape>();
@@ -32,13 +32,13 @@ bool Segmentation::Initialize() {
     postprocess_ = std::make_shared<PostProcess>();
 
     // Load model
-    std::string segment_weight = config_json.get_string("GoEngine/Path/SegmentEngine");
+    std::string segment_weight = config_json.get_string("Engine/Path/SegmentEngine");
     if(FileSystem::exist(segment_weight) == true)
     {
         engine_->LoadEngine(segment_weight, input_shape_, output_shape_);
     }
     else {
-        segment_weight = config_json.get_string("GoEngine/Path/SegmentWeights");
+        segment_weight = config_json.get_string("Engine/Path/SegmentWeights");
         segment_weight += ".onnx";
         if(FileSystem::exist(segment_weight) == false)
         {
@@ -134,12 +134,12 @@ bool Segmentation::LoadEngine(std::string _model_path, JsonObject &_config) {
     DM::Logger::GetInstance().Log("Segmentation::LoadEngine()", LOGLEVEL::INFO);
     dm_trt::ModelParams model_params;
     model_params.weight_path = _model_path;
-    model_params.engine_path = _config.get_string("GoEngine/Path/SegmentEngine");
-    model_params.input_index = _config.get_int("GoEngine/Segment/InputIdx");;
-    model_params.fp16 = (bool)_config.get_int("GoEngine/Segment/FP16");
-    model_params.iou_threshold = _config.get_float("GoEngine/Segment/IoULevel");
-    model_params.confidence_threshold = _config.get_float("GoEngine/Segment/ConfLevel");
-    model_params.max_objects = _config.get_int("GoEngine/Segment/MaxObjects");
+    model_params.engine_path = _config.get_string("Engine/Path/SegmentEngine");
+    model_params.input_index = _config.get_int("Engine/Segment/InputIdx");;
+    model_params.fp16 = (bool)_config.get_int("Engine/Segment/FP16");
+    model_params.iou_threshold = _config.get_float("Engine/Segment/IoULevel");
+    model_params.confidence_threshold = _config.get_float("Engine/Segment/ConfLevel");
+    model_params.max_objects = _config.get_int("Engine/Segment/MaxObjects");
     engine_->LoadEngine(model_params, input_shape_, output_shape_);
     class_num_ = (*output_shape_)[0].height_ - 4 - 32;
     return true;

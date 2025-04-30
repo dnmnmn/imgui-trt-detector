@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 30.
+// Created by Dongmin on 25. 4. 30.
 //
 
 #include "remover.h"
@@ -9,9 +9,9 @@ bool Remover::Initialize() {
     DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
     JsonObject config_json;
     config_json.load(config_path_);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    width_ = config_json.get_int("GoEngine/Stream/Width");
-    height_ = config_json.get_int("GoEngine/Stream/Height");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    width_ = config_json.get_int("Engine/Stream/Width");
+    height_ = config_json.get_int("Engine/Stream/Height");
     filter_image_ = cv::Mat(height_, width_, CV_32FC3, cv::Scalar(0, 0, 0));
     return true;
 }
@@ -43,6 +43,4 @@ void Remover::AddFrame(std::shared_ptr<cv::Mat> _frame) {
 
 void Remover::GetImage(cv::Mat &_filtered_image) {
     filter_image_.convertTo(_filtered_image, CV_8UC3, 255.0);
-    cv::imshow("Filtered", _filtered_image);
-    cv::waitKey(1);
 }

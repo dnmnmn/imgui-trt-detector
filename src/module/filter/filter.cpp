@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 30.
+// Created by Dongmin on 25. 4. 30.
 //
 
 #include "filter.h"
@@ -9,9 +9,9 @@ bool Filter::Initialize() {
     DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
     JsonObject config_json;
     config_json.load(config_path_);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    width_ = config_json.get_int("GoEngine/Segment/MaskWidth");
-    height_ = config_json.get_int("GoEngine/Segment/MaskHeight");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    width_ = config_json.get_int("Engine/Segment/MaskWidth");
+    height_ = config_json.get_int("Engine/Segment/MaskHeight");
 
     filter_image_ = cv::Mat(height_, width_, CV_8UC3, cv::Scalar(0, 0, 0));
     return true;

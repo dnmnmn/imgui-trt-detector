@@ -11,7 +11,7 @@
 #include <utils/FileSystem/FileSystem.h>
 #include <utils/Json/JsonObject.h>
 #include <utils/DateTime/DateTime.h>
-#define CONFIG_PATH "/home/gopizza/data/config/mas.json"
+#define CONFIG_PATH "../config/config.json"
 
 enum LOGLEVEL
 {

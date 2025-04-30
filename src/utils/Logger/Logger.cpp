@@ -10,9 +10,9 @@ void Logger::Initialize()
     JsonObject config_json;
     config_json.load(CONFIG_PATH);
 
-    bool use_log = (bool)config_json.get_int("GoEngine/Log/Use");
-    int log_level = config_json.get_int("GoEngine/Log/Level");
-    log_path_ = config_json.get_string("GoEngine/Log/Path");
+    bool use_log = (bool)config_json.get_int("Engine/Log/Use");
+    int log_level = config_json.get_int("Engine/Log/Level");
+    log_path_ = config_json.get_string("Engine/Log/Path");
     if (!use_log) return;
 
     verbosity = log_level;
@@ -45,7 +45,7 @@ void Logger::StartThread() {
         message.append(timer.get_log_string());
         message.append("==================================\n");
         message.append(timer.get_log_string());
-        message.append("GO LOGGER START\n");
+        message.append("LOGGER START\n");
         FileSystem::write_all_text(log_path_, message);
     }
     bool expect = false;
@@ -79,7 +79,7 @@ void Logger::StopThread() {
         std::string message = "";
         timer.now();
         message.append(timer.get_log_string());
-        message.append("GO LOGGER STOP\n");
+        message.append("LOGGER STOP\n");
         message.append(timer.get_log_string());
         message.append("==================================\n");
         FileSystem::write_all_text(log_path_, message);
@@ -123,7 +123,7 @@ void Logger::Run() {
         std::string message = "";
         timer.now();
         message.append(timer.get_log_string());
-        message.append("GoLogger stopped\n");
+        message.append("Logger stopped\n");
         message.append("==================================\n");
         FileSystem::write_all_text(log_path_, message);
     }

@@ -1,5 +1,5 @@
 //
-// Created by gopizza on 25. 4. 24.
+// Created by Dongmin on 25. 4. 24.
 //
 
 #include "imgui_trt.h"
@@ -17,12 +17,12 @@ bool ImGuiTRT::Initialize() {
         return false;
     }
 
-    int use_stream = config_json.get_int("GoEngine/Stream/Use");
-    int use_detect = config_json.get_int("GoEngine/Detect/Use");
-    int use_segment = config_json.get_int("GoEngine/Segment/Use");
-    int use_tracker = config_json.get_int("GoEngine/Tracker/Use");
-    int use_draw = config_json.get_int("GoEngine/Draw/Use");
-    int use_filter = config_json.get_int("GoEngine/Filter/Use");
+    int use_stream = config_json.get_int("Engine/Stream/Use");
+    int use_detect = config_json.get_int("Engine/Detect/Use");
+    int use_segment = config_json.get_int("Engine/Segment/Use");
+    int use_tracker = config_json.get_int("Engine/Tracker/Use");
+    int use_draw = config_json.get_int("Engine/Draw/Use");
+    int use_filter = config_json.get_int("Engine/Filter/Use");
     int use_display = 0;
     // Initialize the data store
     pipeline_ = std::make_shared<Pipeline>();

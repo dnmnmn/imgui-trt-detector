@@ -12,11 +12,11 @@ bool Stream::Initialize() {
     if(FileSystem::exist(config_path_)) {
         config_json.load(config_path_);
     } else assert(false);
-    debug_time_ = config_json.get_int("GoEngine/Log/DebugTime") * 1000;
-    sleep_time_ = config_json.get_int("GoEngine/Log/SleepTime");
-    string video_path = config_json.get_string("GoEngine/Stream/Stream");
-    height_ = config_json.get_int("GoEngine/Stream/Height");
-    width_ = config_json.get_int("GoEngine/Stream/Width");
+    debug_time_ = config_json.get_int("Engine/Log/DebugTime") * 1000;
+    sleep_time_ = config_json.get_int("Engine/Log/SleepTime");
+    string video_path = config_json.get_string("Engine/Stream/Stream");
+    height_ = config_json.get_int("Engine/Stream/Height");
+    width_ = config_json.get_int("Engine/Stream/Width");
     capture_.open(video_path);
     if (!capture_.isOpened()) {
         std::cerr << "Error: Video::initialize() - Could not open video file: " << video_path << std::endl;
