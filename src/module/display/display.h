@@ -5,12 +5,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include <SDL3/SDL_render.h>
-
 #include "module/module.h"
 #include "imgui.h"
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_sdlrenderer3.h"
 
 #include <GLFW/glfw3.h>
 

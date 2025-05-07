@@ -1,14 +1,14 @@
 {
   "Engine": {
     "Path": {
-      "SegmentEngine": "/home/gopizza/data/weights/kor_seg_yolox.engine",
-      "SegmentWeights": "/home/gopizza/data/weights/kor_seg_250211_x",
-      "DetectEngine": "/home/gopizza/data/weights/kor_det_yolo_n2.engine",
-      "DetectWeights": "/home/gopizza/data/weights/kor_det_241227_n"
+      "SegmentEngine": "../data/weights/kor_seg_yolox.engine",
+      "SegmentWeights": "../data/weights/kor_seg_250211_x",
+      "DetectEngine": "../data/weights/kor_det_yolos.engine",
+      "DetectWeights": "../data/weights/kor_det_241227_s"
     },
     "Stream": {
       "Use": 1,
-      "Stream": "/home/gopizza/data/video/full/2.mp4",
+      "Stream": "../data/video/video.avi",
       "Width": 1280,
       "Height": 720,
       "FPS": 30
@@ -62,7 +62,7 @@
     "Log": {
       "Use": 1,
       "Level": 0,
-      "Path": "/home/gopizza/data/log",
+      "Path": "../data/log",
       "DebugTime": 60,
       "SleepTime": 10
     },

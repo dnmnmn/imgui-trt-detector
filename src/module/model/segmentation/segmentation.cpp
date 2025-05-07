@@ -30,7 +30,6 @@ bool Segmentation::Initialize() {
     // PreProcess PostProcess Initialization
     preprocess_ = std::make_shared<PreProcess>();
     postprocess_ = std::make_shared<PostProcess>();
-
     // Load model
     std::string segment_weight = config_json.get_string("Engine/Path/SegmentEngine");
     if(FileSystem::exist(segment_weight) == true)

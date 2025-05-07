@@ -18,8 +18,8 @@ bool Filter::Initialize() {
 }
 
 void Filter::Release() {
-    filter_image_.release();
     DM::Logger::GetInstance().Log(__PRETTY_FUNCTION__, LOGLEVEL::INFO);
+    filter_image_.release();
 }
 
 void Filter::Run() {

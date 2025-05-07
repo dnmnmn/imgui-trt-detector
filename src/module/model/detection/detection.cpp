@@ -26,7 +26,9 @@ bool Detection::Initialize() {
     engine_ = std::make_shared<dm_trt::Engine>();
     engine_->Initialize();
 
-
+    // PreProcess PostProcess Initialization
+    preprocess_ = std::make_shared<PreProcess>();
+    postprocess_ = std::make_shared<PostProcess>();
 
     // Load model
     std::string detect_weight = config_json.get_string("Engine/Path/DetectEngine");
@@ -46,15 +48,13 @@ bool Detection::Initialize() {
     }
     class_num_ = (*output_shape_)[0].height_ - 4;
 
-    // PreProcess PostProcess Initialization
-    preprocess_ = std::make_shared<PreProcess>();
-    preprocess_->Initialize();
-    postprocess_ = std::make_shared<PostProcess>();
-    postprocess_->Initialize();
+
 
     buffer_ = std::make_shared<dm_trt::Buffer>();
     buffer_->Initialize(batch_size_, input_shape_, output_shape_, org_image_height, org_image_width, class_num_);
-
+    preprocess_->Initialize();
+    postprocess_->Initialize();
+    preprocess_->SetCudaStreamCtx(buffer_->stream_);
     engine_->SetBuffer(buffer_);
 
     return true;

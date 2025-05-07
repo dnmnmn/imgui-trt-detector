@@ -17,10 +17,9 @@ include_directories("/usr/local/cuda/include")
 
 include_directories("src")
 find_package(OpenGL REQUIRED)
-find_package(SDL3 REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 
-link_directories("/home/gopizza/lib")
+link_directories("/home/moon/lib")
 link_directories("/usr/local/cuda/lib64")
 
 add_executable(imgui_trt
@@ -36,24 +35,24 @@ add_executable(imgui_trt
     imgui/imstb_rectpack.h
     imgui/imstb_textedit.h
     imgui/imstb_truetype.h
-        imgui/backends/imgui_impl_glfw.cpp
-        imgui/backends/imgui_impl_glfw.h
+    imgui/backends/imgui_impl_glfw.cpp
+    imgui/backends/imgui_impl_glfw.h
 
     imgui/backends/imgui_impl_opengl3.cpp
     imgui/backends/imgui_impl_opengl3.h
     imgui/backends/imgui_impl_opengl3_loader.h
 
-        src/module/stream/stream.cpp
-        src/module/stream/stream.h
+    src/module/stream/stream.cpp
+    src/module/stream/stream.h
     src/data/pipeline.cpp
     src/data/pipeline.h
     src/module/module.cpp
     src/module/module.h
 
-        src/utils/trt/dm_engine.cpp
-        src/utils/trt/dm_engine.h
-        src/utils/trt/dm_buffer.cpp
-        src/utils/trt/dm_buffer.h
+    src/utils/trt/dm_engine.cpp
+    src/utils/trt/dm_engine.h
+    src/utils/trt/dm_buffer.cpp
+    src/utils/trt/dm_buffer.h
     src/utils/trt/logger.h
 
     src/utils/DateTime/DateTime.cpp
@@ -67,39 +66,40 @@ add_executable(imgui_trt
     src/utils/Timer/Timer.h
     src/utils/FileSystem/FileSystem.cpp
     src/utils/FileSystem/FileSystem.h
-        src/utils/ColorMap/ColorMap.cpp
-        src/utils/ColorMap/ColorMap.h
+    src/utils/ColorMap/ColorMap.cpp
+    src/utils/ColorMap/ColorMap.h
     src/data/shape.h
     src/data/box/bbox.h
     src/data/box/trackbox.h
     src/data/container/container.h
     src/module/display/display.cpp
     src/module/display/display.h
-        src/imgui_trt.cpp
-        src/imgui_trt.h
-        src/application/application.cpp
-        src/application/application.h
-        src/module/model/model.cpp
-        src/module/model/model.h
-        src/module/model/segmentation/segmentation.cpp
-        src/module/model/segmentation/segmentation.h
-        src/module/model/preprocess/preprocess.cpp
-        src/module/model/postprocess/postprocess.cpp
-        src/module/model/postprocess/postprocess.h
-        src/module/model/preprocess/preprocess.h
-        src/module/model/preprocess/preprocess.cu
-        src/module/model/detection/detection.cpp
-        src/module/model/detection/detection.h
-        src/module/draw/draw.cpp
-        src/module/draw/draw.h
-        src/module/tracker/tracker.cpp
-        src/module/tracker/tracker.h
-        src/module/tracker/hungarian/hungarian_algorithm.cpp
-        src/module/tracker/hungarian/hungarian_algorithm.hpp
-        src/module/filter/filter.cpp
-        src/module/filter/filter.h
-        src/module/filter/remover/remover.cpp
-        src/module/filter/remover/remover.h
+    src/imgui_trt.cpp
+    src/imgui_trt.h
+    src/application/application.cpp
+    src/application/application.h
+    src/module/model/model.cpp
+    src/module/model/model.h
+    src/module/model/segmentation/segmentation.cpp
+    src/module/model/segmentation/segmentation.h
+    src/module/model/preprocess/preprocess.cpp
+    src/module/model/postprocess/postprocess.cpp
+    src/module/model/postprocess/postprocess.h
+    src/module/model/preprocess/preprocess.h
+    src/module/model/preprocess/preprocess.cu
+    src/module/model/detection/detection.cpp
+    src/module/model/detection/detection.h
+    src/module/draw/draw.cpp
+    src/module/draw/draw.h
+    src/module/tracker/tracker.cpp
+    src/module/tracker/tracker.h
+    src/module/tracker/hungarian/hungarian_algorithm.cpp
+    src/module/tracker/hungarian/hungarian_algorithm.hpp
+    src/module/filter/filter.cpp
+    src/module/filter/filter.h
+    src/module/filter/remover/remover.cpp
+    src/module/filter/remover/remover.h
+    src/module/filter/remover/remover.cu
 
 )
 
