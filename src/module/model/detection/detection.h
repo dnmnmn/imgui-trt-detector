@@ -19,6 +19,12 @@ public:
 
 private:
     bool LoadEngine(std::string _model_path, JsonObject &_config);
+
+    bool width_margin_;
+    int context_width_;
+    int context_height_;
+    float width_scale_;
+    float height_scale_;
 };
 
 

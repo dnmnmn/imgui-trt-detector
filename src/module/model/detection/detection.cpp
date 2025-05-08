@@ -57,6 +57,25 @@ bool Detection::Initialize() {
     preprocess_->SetCudaStreamCtx(buffer_->stream_);
     engine_->SetBuffer(buffer_);
 
+    float video_scale = (float)org_image_width / (float)org_image_height;
+    float model_scale = (float)input_shape_->width_ / (float)input_shape_->height_;
+    if (video_scale > model_scale)
+    {
+        width_margin_ = false;
+        context_width_ = input_shape_->width_;
+        context_height_ = input_shape_->width_ * org_image_height / org_image_width;
+        height_scale_ = (float)context_width_ / (float)context_height_;
+        width_scale_ = 1.0f;
+    }
+    else
+    {
+        width_margin_ = true;
+        context_width_ = input_shape_->width_ * org_image_width / org_image_height;
+        context_height_ = input_shape_->height_;
+        height_scale_ = 1.0f;
+        width_scale_ = (float)context_height_ / (float)context_width_;
+
+    }
     return true;
 }
 
@@ -64,7 +83,7 @@ void Detection::Preprocess() {
     preprocess_->gpu_resize((uchar*)container_->gpu_data_,
                             (uchar*)engine_->GetInputResizeGpuData(),
                             org_image_shape_->height_, org_image_shape_->width_, org_image_shape_->channel_,
-                            input_shape_->height_, input_shape_->width_, input_shape_->channel_);
+                            context_height_, context_width_, input_shape_->channel_);
     preprocess_->gpu_nhwc_bgr_to_nchw_rgb((uchar*)engine_->GetInputResizeGpuData(),
                                           (float*)engine_->GetInputGpuData(),
                                           input_shape_->batch_, input_shape_->height_,
@@ -84,18 +103,17 @@ void Detection::Postprocess() {
     int obj_count = ((int*)output_tensor4->cpu_tensor)[0];
     obj_count = obj_count > MAX_DETECT_BOX ? MAX_DETECT_BOX : obj_count;
     container_->bboxes_.resize(obj_count);
-    float scale = (float)input_shape_->width_ / (float)input_shape_->height_;
     for(int i = 0; i < obj_count; i++) {
         int index = ((int*)output_tensor3->cpu_tensor)[i * 3 + 2];
         int class_id = ((int*)output_tensor3->cpu_tensor)[i * 3 + 1];
         float score = ((float*)output_tensor2->cpu_tensor)[index + 4 * max_objects_];
-        float cx = ((float*)output_tensor2->cpu_tensor)[index];
+        float cx = ((float*)output_tensor2->cpu_tensor)[index] * width_scale_;
         cx = std::clamp(cx, 0.0f, 1.0f);
-        float cy = ((float*)output_tensor2->cpu_tensor)[index + 1 * max_objects_] * scale;
+        float cy = ((float*)output_tensor2->cpu_tensor)[index + 1 * max_objects_] * height_scale_;
         cy = std::clamp(cy, 0.0f, 1.0f);
-        float w = ((float*)output_tensor2->cpu_tensor)[index + 2 * max_objects_];
+        float w = ((float*)output_tensor2->cpu_tensor)[index + 2 * max_objects_] * width_scale_;
         w = std::clamp(w, 0.0f, 1.0f);
-        float h = ((float*)output_tensor2->cpu_tensor)[index + 3 * max_objects_] * scale;
+        float h = ((float*)output_tensor2->cpu_tensor)[index + 3 * max_objects_] * height_scale_;
         h = std::clamp(h, 0.0f, 1.0f);
         container_->bboxes_[i].NewXywh(
             cx, cy, w, h,

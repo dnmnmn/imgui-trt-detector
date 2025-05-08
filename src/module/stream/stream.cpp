@@ -19,7 +19,15 @@ bool Stream::Initialize() {
     width_ = config_json.get_int("Engine/Stream/Width");
     capture_.open(video_path);
     if (!capture_.isOpened()) {
-        std::cerr << "Error: Video::initialize() - Could not open video file: " << video_path << std::endl;
+        DM::Logger::GetInstance().Log("Video::initialize() - Could not open video file: " + video_path, LOGLEVEL::ERROR);
+        return false;
+    }
+    if (width_ != capture_.get(cv::CAP_PROP_FRAME_WIDTH) || height_ != capture_.get(cv::CAP_PROP_FRAME_HEIGHT))
+    {
+        config_json.set_int("Engine/Stream/Height", (int)capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
+        config_json.set_int("Engine/Stream/Width", (int)capture_.get(cv::CAP_PROP_FRAME_WIDTH));
+        config_json.save(config_path_);
+        DM::Logger::GetInstance().Log("Video::initialize() - Video Width or Height Size Error, Please Restart", LOGLEVEL::ERROR);
         return false;
     }
     cudaStreamCreate(&input_cuda_stream_);
@@ -44,7 +52,6 @@ void Stream::Run() {
                 data_store_->module_index_queues_[input_module_index_].push(index);
             }
             auto container = data_store_->contaiers_[index];
-            cv::resize(frame, frame, cv::Size(width_, height_));
             container->org_image_ = std::make_shared<cv::Mat>(frame);
             cudaMemcpyAsync(container->gpu_data_,
                        container->org_image_->data,
@@ -54,7 +61,7 @@ void Stream::Run() {
         }
         else {
             DM::Logger::GetInstance().Log("Video Done", LOGLEVEL::WARN);
-            stop_flag_ = true;
+            capture_.set(cv::CAP_PROP_POS_FRAMES, 0);
         }
 
         ++pass_count_;

@@ -7,7 +7,7 @@ __global__ void cuda_kernel_pixel_avg(unsigned char* _in, unsigned char* _out, i
     unsigned int index = (blockIdx.y * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
     if (index < _in_size)
     {
-        float avg = (float)_out[index] * 0.99 + (float)_in[index] * 0.01;
+        float avg = (float)_out[index] * 0.95 + (float)_in[index] * 0.05;
         _out[index] = _in[index] == 0 ? _out[index] : (uchar)avg;
         // _out[index] = _in[index];
     }

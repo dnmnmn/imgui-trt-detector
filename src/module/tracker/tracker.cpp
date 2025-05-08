@@ -49,7 +49,7 @@ void Tracker::Run() {
         auto det_objs = data_store_->contaiers_[index]->bboxes_;
         Match(det_objs);
         Update(data_store_->contaiers_[index]->track_boxes_);
-        Predict();
+        // Predict();
 
         ++pass_count_;
         data_store_->module_index_queues_[output_module_index_].push(index);
