@@ -56,6 +56,17 @@ public:
     };
     void Clear() { alive_ = 0; };
     inline float GetArea() { return w_ * h_; };
+    void Check()
+    {
+        x1_ = std::clamp(x1_, 0.0f, 1.0f);
+        y1_ = std::clamp(y1_, 0.0f, 1.0f);
+        x2_ = std::clamp(x2_, 0.0f, 1.0f);
+        y2_ = std::clamp(y2_, 0.0f, 1.0f);
+        w_ = x2_ - x1_;
+        cx_ = w_ / 2;
+        h_ = y2_ - y1_;
+        cy_ = h_ / 2;
+    }
 public:
     uint alive_ = 0;
     float x1_ = 0.0f;

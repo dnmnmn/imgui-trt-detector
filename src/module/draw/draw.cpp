@@ -37,16 +37,15 @@ void Draw::Run() {
             int bx2 = bbox.x2_ * width_;
             int by2 = bbox.y2_ * height_;
             string label = "id:"+ std::to_string(bbox.track_id_);
-            label += ", score:" + std::to_string(bbox.score_).substr(0,4);
             cv::rectangle(*container->org_image_,
                 cv::Point(bx1, by1), cv::Point(bx2, by2),
-                cv::Scalar(0, 255, 0), 2);
+                cv::Scalar(0, 255, 0), 1);
             cv::rectangle(*container->org_image_,
                 cv::Point(bx1 - 1, by1 - 30), cv::Point(bx2 + 1, by1),
                 cv::Scalar(0, 255, 0), cv::FILLED);
             cv::putText(*container->org_image_,
                 label, cv::Point(bx1 + 1, by1 - 3), cv::FONT_HERSHEY_SIMPLEX,
-                0.8f, cv::Scalar(255, 255, 255), 2);
+                0.8f, cv::Scalar(255, 255, 255), 1);
         }
         cv::Mat resized_image;
         cv::resize(container->mask_, resized_image, cv::Size(seg_width_, seg_height_));

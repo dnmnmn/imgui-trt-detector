@@ -38,10 +38,6 @@ public:
     // gpu memory
     void* gpu_org_image_buffer_;
 
-    // tracker box
-    std::mutex tracker_box_mutex_;
-    TrackBox tracker_box_;
-
     // mask
     int frame_count_;
     std::vector<float> mask_count_;

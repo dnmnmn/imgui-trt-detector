@@ -36,10 +36,9 @@ void Tracker::Run() {
 
         if (!track_alive_boxes_list_.empty()) {
             auto index = track_alive_boxes_list_.begin();
-            data_store_->tracker_box_mutex_.lock();
-            data_store_->tracker_box_.Copy(track_boxes_vector_[*index]);
-            data_store_->tracker_box_.active_ = true;
-            data_store_->tracker_box_mutex_.unlock();
+            container->tracker_box_.Copy(track_boxes_vector_[*index]);
+            container->tracker_box_.active_ = track_boxes_vector_[*index].active_;
+            container->tracker_box_.Check();
         }
 
         if (container->org_image_->empty()) {
@@ -131,7 +130,6 @@ void Tracker::MakeNewTrackBox(Bbox &_det_box) {
         track_alive_boxes_list_.push_back(index);
         track_boxes_vector_[index].Copy(_det_box);
         track_boxes_vector_[index].track_id_ = track_id_++;
-        track_alive_boxes_list_.push_back(index);
         // std::cout << "MakeNewTrackBox: " << index << std::endl;
     }
     else {
@@ -146,6 +144,7 @@ void Tracker::CorrectBox(Bbox &_det_box, TrackBox &_track_box) {
 void Tracker::GetCostMatrix(vector<Bbox> &_objects, vector<vector<double> > &_cost, vector<int> &_track_idx_vec) {
     auto track_idx = track_alive_boxes_list_.begin();
     for(int i = 0 ; i < track_alive_boxes_list_.size(); i++) {
+        track_boxes_vector_[*track_idx].active_ = false;
         _track_idx_vec[i] = (*track_idx++);
     }
 

@@ -26,7 +26,10 @@ public:
     GLuint video_texture_;
     GLuint menu_texture_;
     int imgui_radio_button_ = 0;
+    int imgui_fps_slider_ = 30;
     cv::Mat sub_image_;
+    bool paused_ = false;
+    uint index_;
 };
 
 

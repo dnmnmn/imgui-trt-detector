@@ -8,12 +8,10 @@ using namespace dm_trt;
 
 void Engine::Initialize()
 {
-    std::cout << "Engine::initialize()" << std::endl;
 }
 
 void Engine::Release()
 {
-    std::cout << "Engine::release()" << std::endl;
     if (buffer_ != nullptr)
     {
         buffer_->Release();

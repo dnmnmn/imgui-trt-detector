@@ -61,12 +61,14 @@ void Segmentation::Run() {
     uint index = 0;
     if(data_store_->module_index_queues_[input_module_index_].try_pop(index))
     {
-        if (data_store_->tracker_box_.active_==false) {
+        container_ = data_store_->contaiers_[index];
+        if (container_->tracker_box_.active_==false) {
+            container_->mask_.setTo(0);
             data_store_->module_index_queues_[output_module_index_].push(index);
             return;
         }
-        tracker_box_ = static_cast<Bbox>(data_store_->tracker_box_);
-        container_ = data_store_->contaiers_[index];
+        tracker_box_ = static_cast<Bbox>(container_->tracker_box_);
+
         Preprocess();
         Inference();
         Postprocess();
@@ -122,7 +124,7 @@ void Segmentation::Postprocess() {
             // 마스크 영역 복사 (0=손, 1=도우 -> 0=도우, 1=소스 ...)
             if(temp > 0.5)
             {
-                uint8_t temp2 = std::round(temp) - 1;
+                uint8_t temp2 = std::round(temp);
                 container_->mask_.data[j] = temp2;
             }
         }

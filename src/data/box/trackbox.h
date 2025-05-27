@@ -38,7 +38,7 @@ public:
         kf_[1].statePost.at<float>(1) = 0;
         kf_[1].statePost.at<float>(2) = 0;
         kf_[1].statePost.at<float>(3) = 0;
-        track_id_ = 0;
+        track_id_ = -1;
         alive_ = 0;
         is_matched_ = false;
         active_ = false;

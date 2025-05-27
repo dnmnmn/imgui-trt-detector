@@ -48,6 +48,7 @@ public:
     void* gpu_data_;
     std::vector<T> bboxes_;
     std::vector<TrackBox> track_boxes_;
+    TrackBox tracker_box_;
     int new_pixel_ = 0;                         // n(현재 마스크 - (현재 마스크 & 도우 마스크))
 };
 #endif //CONTAINER_H

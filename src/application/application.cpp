@@ -36,14 +36,14 @@ void Application::Release() {
 
 void Application::RunThread() {
     fps_timer_.start();
-
+    paused_ = false;
     glfwMakeContextCurrent(window_);
     glfwSwapInterval(1); // Enable vsync
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     //
     // // Setup Platform/Renderer backends
@@ -64,6 +64,8 @@ void Application::RunThread() {
     glBindTexture(GL_TEXTURE_2D, menu_texture_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    imgui_fps_slider_ = 30;
     while(!stop_flag_) {
         Run();
         if(fps_timer_.end() >= debug_time_)
@@ -84,13 +86,17 @@ void Application::RunThread() {
 
 void Application::Run() {
     // Main loop
-    uint index;
-    if (data_store_->module_index_queues_[input_module_index_].try_pop(index)) {
-        auto container = data_store_->contaiers_[index];
+    bool running = true;
+    if (!paused_) running = data_store_->module_index_queues_[input_module_index_].try_pop(index_);
+    if (running) {
+        auto container = data_store_->contaiers_[index_];
         auto org_image = container->org_image_;
         if (!glfwWindowShouldClose(window_)) {
             glfwPollEvents();
 
+            if (ImGui::IsKeyPressed(ImGuiKey_Space))
+                paused_ = paused_ == false;
+            sleep_time_ = 500 / imgui_fps_slider_;
             // Start the Dear ImGui frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -104,15 +110,16 @@ void Application::Run() {
             ImGui::RadioButton("Menu", &imgui_radio_button_, 1);
             ImGui::RadioButton("Segmentation", &imgui_radio_button_, 2);
             ImGui::RadioButton("Remove", &imgui_radio_button_, 3);
+            ImGui::SliderInt("fps", &imgui_fps_slider_, 1, 60);
             ImGui::Image(ImTextureID(video_texture_), ImVec2(org_image->cols, org_image->rows));
             ImGui::End();
             if (imgui_radio_button_ == 1) {
                 // crop image
-                data_store_->tracker_box_mutex_.lock();
-                Bbox bbox = data_store_->tracker_box_;
-                data_store_->tracker_box_mutex_.unlock();
-                cv::Mat cropped_image(*org_image,cv::Rect(bbox.x1_ * org_image->cols, bbox.y1_ * org_image->rows, bbox.w_ * org_image->cols, bbox.h_ * org_image->rows));
-                cv::resize(cropped_image, sub_image_, cv::Size(container->color_mask_.cols, container->color_mask_.rows));
+                if (container->tracker_box_.active_!=false) {
+                    Bbox bbox = static_cast<Bbox>(container->tracker_box_);
+                    cv::Mat cropped_image(*org_image,cv::Rect(bbox.x1_ * org_image->cols, bbox.y1_ * org_image->rows, bbox.w_ * org_image->cols, bbox.h_ * org_image->rows));
+                    cv::resize(cropped_image, sub_image_, cv::Size(container->color_mask_.cols, container->color_mask_.rows));
+                }
                 glBindTexture(GL_TEXTURE_2D, menu_texture_);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, container->color_mask_.cols, container->color_mask_.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, sub_image_.data);
 
@@ -152,10 +159,12 @@ void Application::Run() {
         glfwSwapBuffers(window_);
 
         ++pass_count_;
-        data_store_->module_index_queues_[output_module_index_].push(index);
+        if (paused_ == false)
+            data_store_->module_index_queues_[output_module_index_].push(index_);
     }
     else {
         ++fail_count_;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_));
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_));
 }
