@@ -96,6 +96,11 @@ void Application::Run() {
 
             if (ImGui::IsKeyPressed(ImGuiKey_Space))
                 paused_ = paused_ == false;
+            if (paused_ == true && ImGui::IsKeyPressed(ImGuiKey_RightArrow))
+            {
+                data_store_->module_index_queues_[output_module_index_].push(index_);
+                data_store_->module_index_queues_[input_module_index_].try_pop(index_);
+            }
             sleep_time_ = 500 / imgui_fps_slider_;
             // Start the Dear ImGui frame
             ImGui_ImplOpenGL3_NewFrame();
@@ -107,7 +112,7 @@ void Application::Run() {
 
             ImGui::Begin("Video Stream");
             ImGui::RadioButton("None", &imgui_radio_button_, 0);
-            ImGui::RadioButton("Menu", &imgui_radio_button_, 1);
+            ImGui::RadioButton("Object", &imgui_radio_button_, 1);
             ImGui::RadioButton("Segmentation", &imgui_radio_button_, 2);
             ImGui::RadioButton("Remove", &imgui_radio_button_, 3);
             ImGui::SliderInt("fps", &imgui_fps_slider_, 1, 60);
