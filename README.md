@@ -31,6 +31,6 @@ C++(TensorRT) 기반의 추론 프로그램. <br>
     * .onnx 파일 경로를 설정하면 .engine파일로 자동 변환
   * video 경로 설정 (Engine/Stream/Stream)
 
-![Segmentation](https://github.com/dnmnmn/imgui-trt-detector/tree/main/data/Segmentation.png)
+![Segmentation](https://github.com/dnmnmn/imgui-trt-detector/blob/main/data/example/Segmentation.png)
 
-![Segmentation](https://github.com/dnmnmn/imgui-trt-detector/tree/main/data/Remover.png)
+![Remover](https://github.com/dnmnmn/imgui-trt-detector/blob/main/data/example/Remover.png)
